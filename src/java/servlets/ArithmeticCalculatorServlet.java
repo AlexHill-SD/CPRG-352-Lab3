@@ -55,74 +55,7 @@ public class ArithmeticCalculatorServlet extends HttpServlet {
         }
         else
         {
-             boolean isFirstNumber = true;
-             boolean isFirstDecimal = false;
-             int firstDecimalPointCount = 0;
-            //check that the input is entirely numerical digits
-            for (char c : firstNumber.toCharArray())
-            {
-                if (!Character.isDigit(c))
-                {
-                    if (c != '.')
-                    {
-                        isFirstNumber = false;
-                    }
-                    else if (c == '.' && firstDecimalPointCount == 0)
-                    {
-                        isFirstDecimal = true;
-                        firstDecimalPointCount++;
-                    }
-                }
-            }
-            
-            boolean isSecondNumber = true;
-             boolean isSecondDecimal = false;
-             int secondDecimalPointCount = 0;
-            for (char c : firstNumber.toCharArray())
-            {
-                if (!Character.isDigit(c))
-                {
-                    if (c != '.')
-                    {
-                        isSecondNumber = false;
-                    }
-                    else if (c == '.' && secondDecimalPointCount == 0)
-                    {
-                        isSecondDecimal = true;
-                        secondDecimalPointCount++;
-                    }
-                }
-            }
-            
-            // check if inputs are actually numbers
-            if (!isFirstNumber || !isSecondNumber)
-            {
-                // set correct error message
-                request.setAttribute("message", "invalid");
-
-                // forward error message to jsp
-                getServletContext().getRequestDispatcher("/WEB-INF/arithmeticcalculator.jsp").forward(request, response);
-
-                return;
-            }
-            
-            // check if inputs are decimals
-            if (isFirstDecimal || isSecondDecimal)
-            {
-                double firstConvertedNumber = Double.parseDouble(firstNumber);
-                double secondConvertedNumber = Double.parseDouble(secondNumber);
-                
-                String result = calculateResult(firstConvertedNumber, secondConvertedNumber, calculationType.charAt(0));
-                
-                // set correct error message
-                request.setAttribute("message", result);
-
-                // forward error message to jsp
-                getServletContext().getRequestDispatcher("/WEB-INF/arithmeticcalculator.jsp").forward(request, response);
-
-                return;
-            }
-            else
+            try
             {
                 int firstConvertedNumber = Integer.parseInt(firstNumber);
                 int secondConvertedNumber = Integer.parseInt(secondNumber);
@@ -134,10 +67,33 @@ public class ArithmeticCalculatorServlet extends HttpServlet {
 
                 // forward error message to jsp
                 getServletContext().getRequestDispatcher("/WEB-INF/arithmeticcalculator.jsp").forward(request, response);
-
-                return;
             }
-            
+            catch (NumberFormatException intNFE)
+            {
+                try
+                {
+                    double firstConvertedNumber = Double.parseDouble(firstNumber);
+                    double secondConvertedNumber = Double.parseDouble(secondNumber);
+
+                    String result = calculateResult(firstConvertedNumber, secondConvertedNumber, calculationType.charAt(0));
+
+                    // set correct error message
+                    request.setAttribute("message", result);
+
+                    // forward error message to jsp
+                    getServletContext().getRequestDispatcher("/WEB-INF/arithmeticcalculator.jsp").forward(request, response);
+                }
+                catch (NumberFormatException decimalNFE)
+                {
+                    // set correct error message
+                    request.setAttribute("message", "invalid");
+
+                    // forward error message to jsp
+                    getServletContext().getRequestDispatcher("/WEB-INF/arithmeticcalculator.jsp").forward(request, response);
+
+                    return;
+                }
+            }
         }
     }
     

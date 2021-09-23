@@ -34,10 +34,7 @@ public class AgeCalculatorServlet extends HttpServlet {
         String userAge = request.getParameter("age_input");
         System.out.println("|" + userAge + "|");
         
-        // set the attributes for the JSP
-        request.setAttribute("age_input", userAge);
-        
-        if (userAge == null || userAge.equals("") )
+        if (userAge == null || userAge.equals(""))
         {
             // set correct error message
             request.setAttribute("message", "You must give your current age in whole numbers.");
@@ -49,36 +46,28 @@ public class AgeCalculatorServlet extends HttpServlet {
         }
         else
         {
-            boolean isNumber = true;
-            //check that the input is entirely numerical digits
-            for (char c : userAge.toCharArray())
+            try
             {
-                if (!Character.isDigit(c))
-                {
-                    isNumber = false;
-                }
+               int convertedAge = Integer.parseInt(userAge);
+
+               int nextAge = convertedAge + 1;
+
+                // set the return message with new age
+                request.setAttribute("message", "Your age after your next birthday will be " + nextAge);
+
+                // forward error message to jsp
+                getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp").forward(request, response);
             }
-            
-            if (!isNumber)
+            catch (NumberFormatException nfe)
             {
-            // set correct error message
-            request.setAttribute("message", "You must give your current age in whole numbers.");
-            
-            // forward error message to jsp
-            getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp").forward(request, response);
-            
-            return;
+                // set correct error message
+                request.setAttribute("message", "You must give your current age in whole numbers.");
+
+                // forward error message to jsp
+                getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp").forward(request, response);
+
+                return;
             }
         }
-        
-            int convertedAge = Integer.parseInt(userAge);
-            
-            int nextAge = convertedAge + 1;
-            
-            // set the return message with new age
-            request.setAttribute("message", "Your age after your next birthday will be " + nextAge);
-            
-            // forward error message to jsp
-            getServletContext().getRequestDispatcher("/WEB-INF/agecalculator.jsp").forward(request, response);
     }
 }
